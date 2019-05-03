@@ -113,7 +113,7 @@ void LuaReadVariableInCpp(lua_State* L)
     lua_getglobal(L, "accessVariableInCpp");
     if (lua_pcall(L, 0, 0, 0) != 0)
     {
-        std::cout << "error running function 'getAndSetInt'" << std::endl;
+        std::cout << "error running function 'accessVariableInCpp'" << std::endl;
         exit(1);
     }
     std::cout << std::endl << "-------------------------------------" << std::endl;
@@ -128,7 +128,8 @@ void LuaReadClassInCpp(lua_State* L)
     lua_pushnumber(L, 20);
     if (lua_pcall(L, 2, 0, 0) != 0)
     {
-        std::cout << "error running function 'createUser'" << std::endl;
+        std::cout << lua_tostring(L, -1) << std::endl;
+        std::cout << "error running function 'accessClassInCpp'" << std::endl;
         exit(1);
     }
     std::cout << std::endl << "-------------------------------------" << std::endl;

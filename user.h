@@ -3,7 +3,7 @@
 class User
 {
 public:
-    User()
+    User() : name_("default"), age_(0)
     {
         std::cout << "Create User" << std::endl;
     }

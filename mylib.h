@@ -1,6 +1,25 @@
 #include <iostream>
 #include <lua.hpp>
 
+// for debug
+void PrintLuaStack(lua_State *L)  
+{  
+    int stackTop=lua_gettop(L);//获取栈顶的索引值  
+    int nIdx = 0;  
+    int nType;  
+  
+    printf("--栈顶(v)(%d)--\n", stackTop);  
+  
+    //显示栈中的元素  
+    for(nIdx = stackTop;nIdx > 0;--nIdx)  
+    {  
+        nType = lua_type(L, nIdx);  
+        printf("(i:%d) %s(%s)\n",nIdx, lua_typename(L,nType), lua_tostring(L,nIdx));  
+    }  
+  
+    printf("--栈底--\n");  
+}  
+
 
 
 // for lua call c++ function
@@ -92,12 +111,16 @@ int NewUser(lua_State* L)
 {
     User **u = (User**)lua_newuserdata(L, sizeof(User*));
     *u = new User();
+
+    luaL_getmetatable(L, "UserClass");
+    lua_setmetatable(L, -2);
+
     return 1;
 }
 
 int SetUserName(lua_State* L)
 {
-    User **u = (User**)lua_touserdata(L, 1);
+    User **u = (User**)luaL_checkudata(L, 1, "UserClass");
     luaL_argcheck(L, u != NULL, 1, "invalid user data");
     
     luaL_checktype(L, -1, LUA_TSTRING);
@@ -109,16 +132,17 @@ int SetUserName(lua_State* L)
 
 int GetUserName(lua_State* L)
 {
-    User **u = (User**)lua_touserdata(L, 1);
+    User **u = (User**)luaL_checkudata(L, 1, "UserClass");
     luaL_argcheck(L, u != NULL, 1, "invalid user data");
     lua_settop(L, 0);
+
     lua_pushstring(L, (*u)->get_name().c_str());
     return 1;
 }
 
 int SetUserAge(lua_State* L)
 {
-    User **u = (User**)lua_touserdata(L, 1);
+    User **u = (User**)luaL_checkudata(L, 1, "UserClass");
     luaL_argcheck(L, u != NULL, 1, "invalid user data");
     
     luaL_checktype(L, -1, LUA_TNUMBER);
@@ -130,16 +154,17 @@ int SetUserAge(lua_State* L)
 
 int GetUserAge(lua_State* L)
 {
-    User **u = (User**)lua_touserdata(L, 1);
+    User **u = (User**)luaL_checkudata(L, 1, "UserClass");
     luaL_argcheck(L, u != NULL, 1, "invalid user data");
     lua_settop(L, 0);
+
     lua_pushnumber(L, (*u)->get_age());
     return 1;
 }
 
 int PrintUser(lua_State* L)
 {
-    User **u = (User**)lua_touserdata(L, 1);
+    User **u = (User**)luaL_checkudata(L, 1, "UserClass");
     luaL_argcheck(L, u != NULL, 1, "invalid user data");
     (*u)->Print();
     return 0;
@@ -147,7 +172,9 @@ int PrintUser(lua_State* L)
 
 int DeleteUser(lua_State *L)
 {
-    User **u = (User**)lua_touserdata(L, 1);
+    User **u = (User**)luaL_checkudata(L, 1, "UserClass");
+    luaL_argcheck(L, u != NULL, 1, "invalid user data");
+
     if(u)
     {
         delete *u;
@@ -156,6 +183,58 @@ int DeleteUser(lua_State *L)
     return 0;
 }
 
+int Index(lua_State *L)
+{
+    //PrintLuaStack(L);
+
+    User **u = (User**)luaL_checkudata(L, 1, "UserClass");
+    luaL_argcheck(L, u != NULL, 1, "invalid user data");
+    
+    std::string call_val = lua_tostring(L, 2);
+
+    if (call_val == "name_")
+    {
+        lua_pushstring(L, (*u)->get_name().c_str());
+    }
+    else if (call_val == "age_")
+    {
+        lua_pushnumber(L, (*u)->get_age());
+    }
+    else if (call_val == "printUser")
+    {
+        lua_pushcfunction(L, PrintUser);
+    }
+    else
+    {
+        return 0;
+    }
+
+    return 1;
+}
+
+int NewIndex(lua_State *L)
+{
+    User **u = (User**)luaL_checkudata(L, 1, "UserClass");
+    luaL_argcheck(L, u != NULL, 1, "invalid user data");
+    
+    std::string call_val = lua_tostring(L, 2);
+
+    if (call_val == "name_")
+    {
+        (*u)->set_name(lua_tostring(L, 3));
+    }
+    else if (call_val == "age_")
+    {
+        (*u)->set_age(static_cast<int>(lua_tonumber(L, 3)));
+    }
+
+    return 0;
+}
+
+int PrintInCpp(lua_State *L)
+{
+    std::cout << lua_tostring(L, -1) << std::endl;
+}
 
 const struct luaL_Reg mylib[] = 
 {
@@ -169,18 +248,38 @@ const struct luaL_Reg mylib[] =
     {"setCppGlobalString", SetCppGlobalString},
 
     {"newUser", NewUser},
-    {"setUserName",SetUserName},
-    {"setUserAge", SetUserAge},
-    {"getUserName",GetUserName},
-    {"getUserAge", GetUserAge},
-    {"printUser", PrintUser},
-    {"deleteUser", DeleteUser},
+
+    {"printInCpp", PrintInCpp},
+
+    {NULL, NULL}
+};
+
+const struct luaL_Reg userlib[] = 
+{
+    // {"setUserName",SetUserName},
+    // {"setUserAge", SetUserAge},
+    // {"getUserName",GetUserName},
+    // {"getUserAge", GetUserAge},
+    // {"printUser", PrintUser},
+    {"__gc", DeleteUser},
+    {"__index", Index},
+    {"__newindex", NewIndex},
 
     {NULL, NULL}
 };
 
 extern "C" int luaopen_mylib(lua_State *L)
 {
+    // create a metatable 'UserClass'
+    luaL_newmetatable(L, "UserClass");
+
+    // set 'UserClass' as itself's __index 
+    //lua_pushvalue(L, -1);
+    //lua_setfield(L, -2, "__index");
+
+    // set 'UserClass' functions
+    luaL_setfuncs(L, userlib, 0);
+
     luaL_newlib(L, mylib);
     return 1;
 }

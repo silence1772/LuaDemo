@@ -24,8 +24,15 @@ end
 
 function accessClassInCpp(name, age)
     local user = mylib.newUser()
-    mylib.setUserName(user, name)
-    mylib.setUserAge(user, age)
-    mylib.printUser(user)
-    mylib.deleteUser(user)
+
+    mylib.printInCpp("name: " .. user.name_ .. "  age: " .. user.age_)
+
+    user.name_ = "Hello"
+    user.age_ = 20
+    
+    mylib.printInCpp("name: " .. user.name_ .. "  age: " .. user.age_)
+
+    --user.printUser(user)
+    --user:printUser()
 end
+
