@@ -231,11 +231,6 @@ int NewIndex(lua_State *L)
     return 0;
 }
 
-int PrintInCpp(lua_State *L)
-{
-    std::cout << lua_tostring(L, -1) << std::endl;
-}
-
 const struct luaL_Reg mylib[] = 
 {
     {"addInCPP", AddInCPP},
@@ -248,8 +243,6 @@ const struct luaL_Reg mylib[] =
     {"setCppGlobalString", SetCppGlobalString},
 
     {"newUser", NewUser},
-
-    {"printInCpp", PrintInCpp},
 
     {NULL, NULL}
 };

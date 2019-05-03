@@ -19,7 +19,8 @@ void LuaReadClassInCpp(lua_State* L);
 int main()
 {
     lua_State *L = luaL_newstate();
-
+    luaopen_base(L);
+    
     // 注册c++函数到lua环境中
     luaL_requiref(L, "mylib", luaopen_mylib, 1);
     lua_settop(L, 0);

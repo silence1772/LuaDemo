@@ -25,12 +25,10 @@ end
 function accessClassInCpp(name, age)
     local user = mylib.newUser()
 
-    mylib.printInCpp("name: " .. user.name_ .. "  age: " .. user.age_)
-
     user.name_ = "Hello"
     user.age_ = 20
-    
-    mylib.printInCpp("name: " .. user.name_ .. "  age: " .. user.age_)
+    print("name: " .. user.name_)
+    print("age: " .. user.age_)
 
     --user.printUser(user)
     --user:printUser()
