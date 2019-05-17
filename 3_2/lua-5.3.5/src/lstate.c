@@ -206,6 +206,7 @@ static void f_luaopen (lua_State *L, void *ud) {
   stack_init(L, L);  /* init stack */
   init_registry(L, g);
   luaS_init(L);
+  luaS_resize4e(L, MINSTRTABSIZE);
   luaT_init(L);
   luaX_init(L);
   g->gcrunning = 1;  /* allow gc */
@@ -328,6 +329,9 @@ LUA_API lua_State *lua_newstate (lua_Alloc f, void *ud) {
   g->gcfinnum = 0;
   g->gcpause = LUAI_GCPAUSE;
   g->gcstepmul = LUAI_GCMUL;
+  g->exporting = 0;
+  g->strt4e.size = g->strt4e.nuse = 0;
+  g->strt4e.hash = NULL;
   for (i=0; i < LUA_NUMTAGS; i++) g->mt[i] = NULL;
   if (luaD_rawrunprotected(L, f_luaopen, NULL) != LUA_OK) {
     /* memory allocation error: free partial state */

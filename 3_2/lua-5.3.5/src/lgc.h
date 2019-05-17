@@ -144,4 +144,14 @@ LUAI_FUNC void luaC_checkfinalizer (lua_State *L, GCObject *o, Table *mt);
 LUAI_FUNC void luaC_upvdeccount (lua_State *L, UpVal *uv);
 
 
+/*
+** =============================================================
+** For export table
+** ==============================================================
+*/
+
+
+LUAI_FUNC GCObject *luaC_newobj4e (lua_State *L, int tt, size_t sz);
+
+
 #endif

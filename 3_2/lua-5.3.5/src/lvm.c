@@ -867,10 +867,19 @@ void luaV_execute (lua_State *L) {
       vmcase(OP_NEWTABLE) {
         int b = GETARG_B(i);
         int c = GETARG_C(i);
-        Table *t = luaH_new(L);
-        sethvalue(L, ra, t);
-        if (b != 0 || c != 0)
-          luaH_resize(L, t, luaO_fb2int(b), luaO_fb2int(c));
+        global_State *g = G(L);
+        if (g->exporting == 0) {
+          Table *t = luaH_new(L);
+          sethvalue(L, ra, t);
+          if (b != 0 || c != 0)
+            luaH_resize(L, t, luaO_fb2int(b), luaO_fb2int(c));
+        }
+        else {
+          Table *t = luaH_new4e(L);
+          sethvalue(L, ra, t);
+          if (b != 0 || c != 0)
+            luaH_resize4e(L, t, luaO_fb2int(b), luaO_fb2int(c));
+        }
         checkGC(L, ra + 1);
         vmbreak;
       }
@@ -1312,6 +1321,12 @@ void luaV_execute (lua_State *L) {
       }
       vmcase(OP_EXTRAARG) {
         lua_assert(0);
+        vmbreak;
+      }
+      vmcase(OP_EXPORT) {
+        int b = GETARG_B(i);
+        global_State *g = G(L);
+        g->exporting = b;
         vmbreak;
       }
     }

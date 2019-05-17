@@ -42,6 +42,7 @@ static const char *const luaX_tokens [] = {
     "end", "false", "for", "function", "goto", "if",
     "in", "local", "nil", "not", "or", "repeat",
     "return", "then", "true", "until", "while",
+    "exportstart", "exportend",
     "//", "..", "...", "==", ">=", "<=", "~=",
     "<<", ">>", "::", "<eof>",
     "<number>", "<integer>", "<name>", "<string>"
@@ -74,6 +75,11 @@ void luaX_init (lua_State *L) {
   for (i=0; i<NUM_RESERVED; i++) {
     TString *ts = luaS_new(L, luaX_tokens[i]);
     luaC_fix(L, obj2gco(ts));  /* reserved words are never collected */
+    ts->extra = cast_byte(i+1);  /* reserved word */
+  }
+
+  for (i=0; i<NUM_RESERVED; i++) {
+    TString *ts = luaS_new4e(L, luaX_tokens[i]);
     ts->extra = cast_byte(i+1);  /* reserved word */
   }
 }
@@ -127,7 +133,12 @@ l_noret luaX_syntaxerror (LexState *ls, const char *msg) {
 TString *luaX_newstring (LexState *ls, const char *str, size_t l) {
   lua_State *L = ls->L;
   TValue *o;  /* entry for 'str' */
-  TString *ts = luaS_newlstr(L, str, l);  /* create new string */
+  TString *ts;
+  global_State *g = G(ls->L);
+  if (g->exporting == 0)
+    ts = luaS_newlstr(L, str, l);  /* create new string */
+  else /* exporting table */
+    ts = luaS_newlstr4e(L, str, l);
   setsvalue2s(L, L->top++, ts);  /* temporarily anchor it in stack */
   o = luaH_set(L, ls->h, L->top - 1);
   if (ttisnil(o)) {  /* not in use yet? */

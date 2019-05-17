@@ -65,5 +65,28 @@ LUAI_FUNC void *luaM_growaux_ (lua_State *L, void *block, int *size,
                                size_t size_elem, int limit,
                                const char *what);
 
+
+/*
+** =============================================================
+** For export table
+** ==============================================================
+*/
+
+
+#define luaM_reallocv4e(L,b,on,n,e) \
+  (((sizeof(n) >= sizeof(size_t) && cast(size_t, (n)) + 1 > MAX_SIZET/(e)) \
+      ? luaM_toobig(L) : cast_void(0)) , \
+   luaM_realloc_4e(L, (b), (on)*(e), (n)*(e)))
+
+#define luaM_newvector4e(L,n,t) \
+    cast(t *, luaM_reallocv4e(L, NULL, 0, n, sizeof(t)))
+
+#define luaM_newobject4e(L,tag,s) luaM_realloc_4e(L, NULL, tag, (s))
+
+#define luaM_reallocvector4e(L, v,oldn,n,t) \
+   ((v)=cast(t *, luaM_reallocv4e(L, v, oldn, n, sizeof(t))))
+
+#define luaM_freearray4e(L, b, n)   luaM_realloc_4e(L, (b), (n)*sizeof(*(b)), 0)
+
 #endif
 

@@ -30,31 +30,30 @@
 #include "lvm.h"
 
 
-
 const char lua_ident[] =
   "$LuaVersion: " LUA_COPYRIGHT " $"
   "$LuaAuthors: " LUA_AUTHORS " $";
 
 
 /* value at a non-valid index */
-#define NONVALIDVALUE		cast(TValue *, luaO_nilobject)
+#define NONVALIDVALUE   cast(TValue *, luaO_nilobject)
 
 /* corresponding test */
-#define isvalid(o)	((o) != luaO_nilobject)
+#define isvalid(o)  ((o) != luaO_nilobject)
 
 /* test for pseudo index */
-#define ispseudo(i)		((i) <= LUA_REGISTRYINDEX)
+#define ispseudo(i)   ((i) <= LUA_REGISTRYINDEX)
 
 /* test for upvalue */
-#define isupvalue(i)		((i) < LUA_REGISTRYINDEX)
+#define isupvalue(i)    ((i) < LUA_REGISTRYINDEX)
 
 /* test for valid but not pseudo index */
-#define isstackindex(i, o)	(isvalid(o) && !ispseudo(i))
+#define isstackindex(i, o)  (isvalid(o) && !ispseudo(i))
 
 #define api_checkvalidindex(l,o)  api_check(l, isvalid(o), "invalid index")
 
 #define api_checkstackindex(l, i, o)  \
-	api_check(l, isstackindex(i, o), "index not in the stack")
+  api_check(l, isstackindex(i, o), "index not in the stack")
 
 
 static TValue *index2addr (lua_State *L, int idx) {
@@ -903,7 +902,7 @@ LUA_API void lua_setuservalue (lua_State *L, int idx) {
 
 #define checkresults(L,na,nr) \
      api_check(L, (nr) == LUA_MULTRET || (L->ci->top - L->top >= (nr) - (na)), \
-	"results from function overflow current stack size")
+  "results from function overflow current stack size")
 
 
 LUA_API void lua_callk (lua_State *L, int nargs, int nresults,
@@ -1297,3 +1296,144 @@ LUA_API void lua_upvaluejoin (lua_State *L, int fidx1, int n1,
 }
 
 
+/*
+** =============================================================
+** For export table
+** ==============================================================
+*/
+
+
+static int auxgetstr4e (lua_State *L, const TValue *t, const char *k) {
+  const TValue *slot;
+  TString *str = luaS_new4e(L, k);
+  if (luaV_fastget(L, t, str, slot, luaH_getstr)) {
+    setobj2s(L, L->top, slot);
+    api_incr_top(L);
+  }
+  else {
+    setsvalue2s(L, L->top, str);
+    api_incr_top(L);
+    luaV_finishget(L, t, L->top - 1, L->top - 1, slot);
+  }
+  lua_unlock(L);
+  return ttnov(L->top - 1);
+}
+
+
+static int lua_getglobal4e (lua_State *L, const char *name) {
+  Table *reg = hvalue(&G(L)->l_registry);
+  lua_lock(L);
+  return auxgetstr4e(L, luaH_getint(reg, LUA_RIDX_GLOBALS), name);
+}
+
+
+static void auxsetstr4e (lua_State *L, const TValue *t, const char *k) {
+  const TValue *slot;
+  TString *str = luaS_new4e(L, k);
+  api_checknelems(L, 1);
+  if (luaV_fastset(L, t, str, slot, luaH_getstr, L->top - 1))
+    L->top--;  /* pop value */
+  else {
+    setsvalue2s(L, L->top, str);  /* push 'str' (to make it a TValue) */
+    api_incr_top(L);
+    luaV_finishset(L, t, L->top - 1, L->top - 2, slot);
+    L->top -= 2;  /* pop value and key */
+  }
+  lua_unlock(L);  /* lock done by caller */
+}
+
+
+static void lua_setglobal4e (lua_State *L, const char *name) {
+  Table *reg = hvalue(&G(L)->l_registry);
+  lua_lock(L);  /* unlock done in 'auxsetstr' */
+  auxsetstr4e(L, luaH_getint(reg, LUA_RIDX_GLOBALS), name);
+}
+
+
+/*
+** Detach the table at given index from current Lua state
+*/
+LUA_API void *lua_export_table (lua_State *L, const char *name) {
+  StkId o;
+  Table *t = NULL;
+  lua_lock(L);
+  
+  /* 获取table指针 */
+  lua_getglobal4e(L, name);
+  o = index2addr(L, -1);
+  api_check(L, ttistable(o), "table expected");
+  t = hvalue(o);
+  lua_remove(L, -1);
+  /* 切断全局变量对该table的引用 */
+  lua_pushnil(L);
+  lua_setglobal4e(L, name);
+
+  lua_unlock(L);
+  return t;
+}
+
+
+static void importstr(lua_State *L, TString *ts) {
+  TString* tmp;
+  global_State* g = G(L);
+  const char* str = getstr(ts);
+  size_t l = strlen(str);
+  if (l > LUAI_MAXSHORTLEN) return;
+  unsigned int h = luaS_hash(str, l, g->seed);
+  TString **list = &g->strt.hash[lmod(h, g->strt.size)];
+  lua_assert(str != NULL);  /* otherwise 'memcmp'/'memcpy' are undefined */
+  for (tmp = *list; tmp != NULL; tmp = tmp->u.hnext)
+    if (tmp == ts) return; /* has been imported */
+  ts->next = g->allgc;
+  g->allgc = ts;
+  if (g->strt.nuse >= g->strt.size && g->strt.size <= MAX_INT/2) {
+    luaS_resize(L, g->strt.size * 2);
+    list = &g->strt.hash[lmod(h, g->strt.size)];  /* recompute with new size */
+  }
+  ts->hash = h;
+  ts->shrlen = cast_byte(l);
+  ts->u.hnext = *list;
+  *list = ts;
+  g->strt.nuse++;
+}
+
+
+static void mergetable(lua_State *L, Table *t) {
+  global_State* g = G(L);
+  /* 加入allgc中 */
+  t->next = g->allgc;
+  g->allgc = t;
+  /* 遍历table引用的其他对象 */
+  unsigned int i;
+  for (i = 0; i < t->sizearray; i++) {  /* 遍历数组部分 */
+    if (ttype(&t->array[i]) == LUA_TTABLE)
+      mergetable(L, hvalue(&t->array[i]));
+    else if (ttype(&t->array[i]) == LUA_TSTRING)
+      importstr(L, tsvalue(&t->array[i]));
+  }
+  Node* n;
+  Node* limit = gnode(t, cast(size_t, sizenode(t)));
+  for (n = gnode(t, 0); n < limit; n++) {  /* 遍历哈希表部分 */
+    if (ttype(gval(n)) == LUA_TTABLE)
+      mergetable(L, hvalue(gval(n)));
+    else if (ttype(gval(n)) == LUA_TSTRING)
+      importstr(L, tsvalue(gval(n)));
+    if (ttype(gkey(n)) == LUA_TTABLE)
+      mergetable(L, hvalue(gkey(n)));
+    else if (ttype(gkey(n)) == LUA_TSTRING)
+      importstr(L, tsvalue(gkey(n)));
+  }
+}
+
+
+/*
+** Reconstruct a table from p (exported by lua_export_table) 
+** and pushes it onto the stack
+*/
+LUA_API void lua_import_table (lua_State *L, void *p) {
+  lua_lock(L);
+  sethvalue(L, L->top, p); /* 将table压入栈顶 */
+  api_incr_top(L);
+  mergetable(L, cast(Table*, p)); /* 将table及其引用并入GC模块中 */
+  lua_unlock(L);
+}

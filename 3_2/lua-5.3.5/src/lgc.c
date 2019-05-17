@@ -1177,3 +1177,19 @@ void luaC_fullgc (lua_State *L, int isemergency) {
 /* }====================================================== */
 
 
+/*
+** =============================================================
+** For export table
+** ==============================================================
+*/
+
+
+GCObject *luaC_newobj4e (lua_State *L, int tt, size_t sz) {
+  global_State *g = G(L);
+  GCObject *o = cast(GCObject *, luaM_newobject4e(L, novariant(tt), sz));
+  o->marked = luaC_white(g);
+  o->tt = tt;
+  // o->next = g->allgc;
+  // g->allgc = o;
+  return o;
+}

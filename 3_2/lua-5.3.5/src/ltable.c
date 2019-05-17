@@ -686,3 +686,102 @@ Node *luaH_mainposition (const Table *t, const TValue *key) {
 int luaH_isdummy (const Table *t) { return isdummy(t); }
 
 #endif
+
+
+/*
+** =============================================================
+** For export table
+** ==============================================================
+*/
+
+
+static void setnodevector4e (lua_State *L, Table *t, unsigned int size) {
+  if (size == 0) {  /* no elements to hash part? */
+    t->node = cast(Node *, dummynode);  /* use common 'dummynode' */
+    t->lsizenode = 0;
+    t->lastfree = NULL;  /* signal that it is using dummy node */
+  }
+  else {
+    int i;
+    int lsize = luaO_ceillog2(size);
+    if (lsize > MAXHBITS)
+      luaG_runerror(L, "table overflow");
+    size = twoto(lsize);
+    t->node = luaM_newvector4e(L, size, Node);
+    for (i = 0; i < (int)size; i++) {
+      Node *n = gnode(t, i);
+      gnext(n) = 0;
+      setnilvalue(wgkey(n));
+      setnilvalue(gval(n));
+    }
+    t->lsizenode = cast_byte(lsize);
+    t->lastfree = gnode(t, size);  /* all positions are free */
+  }
+}
+
+
+Table *luaH_new4e (lua_State *L) {
+  GCObject *o = luaC_newobj4e(L, LUA_TTABLE, sizeof(Table));
+  Table *t = gco2t(o);
+  t->metatable = NULL;
+  t->flags = cast_byte(~0);
+  t->array = NULL;
+  t->sizearray = 0;
+  setnodevector4e(L, t, 0);
+  return t;
+}
+
+
+static void setarrayvector4e (lua_State *L, Table *t, unsigned int size) {
+  unsigned int i;
+  luaM_reallocvector4e(L, t->array, t->sizearray, size, TValue);
+  for (i=t->sizearray; i<size; i++)
+     setnilvalue(&t->array[i]);
+  t->sizearray = size;
+}
+
+
+static void auxsetnode4e (lua_State *L, void *ud) {
+  AuxsetnodeT *asn = cast(AuxsetnodeT *, ud);
+  setnodevector4e(L, asn->t, asn->nhsize);
+}
+
+
+void luaH_resize4e (lua_State *L, Table *t, unsigned int nasize,
+                                          unsigned int nhsize) {
+  unsigned int i;
+  int j;
+  AuxsetnodeT asn;
+  unsigned int oldasize = t->sizearray;
+  int oldhsize = allocsizenode(t);
+  Node *nold = t->node;  /* save old hash ... */
+  if (nasize > oldasize)  /* array part must grow? */
+    setarrayvector4e(L, t, nasize);
+  /* create new hash part with appropriate size */
+  asn.t = t; asn.nhsize = nhsize;
+  if (luaD_rawrunprotected(L, auxsetnode4e, &asn) != LUA_OK) {  /* mem. error? */
+    setarrayvector4e(L, t, oldasize);  /* array back to its original size */
+    luaD_throw(L, LUA_ERRMEM);  /* rethrow memory error */
+  }
+  if (nasize < oldasize) {  /* array part must shrink? */
+    t->sizearray = nasize;
+    /* re-insert elements from vanishing slice */
+    for (i=nasize; i<oldasize; i++) {
+      if (!ttisnil(&t->array[i]))
+        luaH_setint(L, t, i + 1, &t->array[i]);
+    }
+    /* shrink array */
+    luaM_reallocvector4e(L, t->array, oldasize, nasize, TValue);
+  }
+  /* re-insert elements from hash part */
+  for (j = oldhsize - 1; j >= 0; j--) {
+    Node *old = nold + j;
+    if (!ttisnil(gval(old))) {
+      /* doesn't need barrier/invalidate cache, as entry was
+         already present in the table */
+      setobjt2t(L, luaH_set(L, t, gkey(old)), gval(old));
+    }
+  }
+  if (oldhsize > 0)  /* not the dummy node? */
+    luaM_freearray4e(L, nold, cast(size_t, oldhsize)); /* free old hash */
+}

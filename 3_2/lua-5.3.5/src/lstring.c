@@ -246,3 +246,137 @@ Udata *luaS_newudata (lua_State *L, size_t s) {
   return u;
 }
 
+
+/*
+** =============================================================
+** For export table
+** ==============================================================
+*/
+
+
+/*
+** resizes the string table
+*/
+void luaS_resize4e (lua_State *L, int newsize) {
+  int i;
+  stringtable *tb = &G(L)->strt4e;
+  if (newsize > tb->size) {  /* grow table if needed */
+    luaM_reallocvector4e(L, tb->hash, tb->size, newsize, TString *);
+    for (i = tb->size; i < newsize; i++)
+      tb->hash[i] = NULL;
+  }
+  for (i = 0; i < tb->size; i++) {  /* rehash */
+    TString *p = tb->hash[i];
+    tb->hash[i] = NULL;
+    while (p) {  /* for each node in the list */
+      TString *hnext = p->u.hnext;  /* save next */
+      unsigned int h = lmod(p->hash, newsize);  /* new position */
+      p->u.hnext = tb->hash[h];  /* chain it */
+      tb->hash[h] = p;
+      p = hnext;
+    }
+  }
+  if (newsize < tb->size) {  /* shrink table if needed */
+    /* vanishing slice should be empty */
+    lua_assert(tb->hash[newsize] == NULL && tb->hash[tb->size - 1] == NULL);
+    luaM_reallocvector4e(L, tb->hash, tb->size, newsize, TString *);
+  }
+  tb->size = newsize;
+}
+
+
+/*
+** creates a new string object
+*/
+static TString *createstrobj4e (lua_State *L, size_t l, int tag, unsigned int h) {
+  TString *ts;
+  GCObject *o;
+  size_t totalsize;  /* total size of TString object */
+  totalsize = sizelstring(l);
+  o = luaC_newobj4e(L, tag, totalsize);
+  ts = gco2ts(o);
+  ts->hash = h;
+  ts->extra = 0;
+  getstr(ts)[l] = '\0';  /* ending 0 */
+  return ts;
+}
+
+
+TString *luaS_createlngstrobj4e (lua_State *L, size_t l) {
+  TString *ts = createstrobj4e(L, l, LUA_TLNGSTR, G(L)->seed);
+  ts->u.lnglen = l;
+  return ts;
+}
+
+
+/*
+** checks whether short string exists and reuses it or creates a new one
+*/
+static TString *internshrstr4e (lua_State *L, const char *str, size_t l) {
+  TString *ts;
+  global_State *g = G(L);
+  unsigned int h = luaS_hash(str, l, g->seed);
+  TString **list = &g->strt4e.hash[lmod(h, g->strt4e.size)];
+  lua_assert(str != NULL);  /* otherwise 'memcmp'/'memcpy' are undefined */
+  for (ts = *list; ts != NULL; ts = ts->u.hnext) {
+    if (l == ts->shrlen &&
+        (memcmp(str, getstr(ts), l * sizeof(char)) == 0)) {
+      /* found! */
+      if (isdead(g, ts))  /* dead (but not collected yet)? */
+        changewhite(ts);  /* resurrect it */
+      return ts;
+    }
+  }
+  if (g->strt4e.nuse >= g->strt4e.size && g->strt4e.size <= MAX_INT/2) {
+    luaS_resize4e(L, g->strt4e.size * 2);
+    list = &g->strt4e.hash[lmod(h, g->strt4e.size)];  /* recompute with new size */
+  }
+  ts = createstrobj4e(L, l, LUA_TSHRSTR, h);
+  memcpy(getstr(ts), str, l * sizeof(char));
+  ts->shrlen = cast_byte(l);
+  ts->u.hnext = *list;
+  *list = ts;
+  g->strt4e.nuse++;
+  return ts;
+}
+
+
+/*
+** new string (with explicit length)
+*/
+TString *luaS_newlstr4e (lua_State *L, const char *str, size_t l) {
+  if (l <= LUAI_MAXSHORTLEN)  /* short string? */
+    return internshrstr4e(L, str, l);
+  else {
+    TString *ts;
+    if (l >= (MAX_SIZE - sizeof(TString))/sizeof(char))
+      luaM_toobig(L);
+    ts = luaS_createlngstrobj4e(L, l);
+    memcpy(getstr(ts), str, l * sizeof(char));
+    return ts;
+  }
+}
+
+
+/*
+** Create or reuse a zero-terminated string, first checking in the
+** cache (using the string address as a key). The cache can contain
+** only zero-terminated strings, so it is safe to use 'strcmp' to
+** check hits.
+*/
+TString *luaS_new4e (lua_State *L, const char *str) {
+  // unsigned int i = point2uint(str) % STRCACHE_N;  /* hash */
+  // int j;
+  // TString **p = G(L)->strcache[i];
+  // for (j = 0; j < STRCACHE_M; j++) {
+  //   if (strcmp(str, getstr(p[j])) == 0)  /* hit? */
+  //     return p[j];  /* that is it */
+  // }
+  // /* normal route */
+  // for (j = STRCACHE_M - 1; j > 0; j--)
+  //   p[j] = p[j - 1];  /* move out last element */
+  // /* new element is first in the list */
+  // p[0] = luaS_newlstr4e(L, str, strlen(str));
+  // return p[0];
+  return luaS_newlstr4e(L, str, strlen(str));
+}

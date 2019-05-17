@@ -63,4 +63,15 @@ LUAI_FUNC int luaH_isdummy (const Table *t);
 #endif
 
 
+/*
+** =============================================================
+** For export table
+** ==============================================================
+*/
+
+
+LUAI_FUNC Table *luaH_new4e (lua_State *L);
+LUAI_FUNC void luaH_resize4e (lua_State *L, Table *t, unsigned int nasize,
+                                                    unsigned int nhsize);
+
 #endif

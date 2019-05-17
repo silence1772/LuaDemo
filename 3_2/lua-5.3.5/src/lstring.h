@@ -46,4 +46,16 @@ LUAI_FUNC TString *luaS_new (lua_State *L, const char *str);
 LUAI_FUNC TString *luaS_createlngstrobj (lua_State *L, size_t l);
 
 
+/*
+** =============================================================
+** For export table
+** ==============================================================
+*/
+
+
+LUAI_FUNC void luaS_resize4e (lua_State *L, int newsize);
+LUAI_FUNC TString *luaS_createlngstrobj4e (lua_State *L, size_t l);
+LUAI_FUNC TString *luaS_newlstr4e (lua_State *L, const char *str, size_t l);
+LUAI_FUNC TString *luaS_new4e (lua_State *L, const char *str);
+
 #endif
