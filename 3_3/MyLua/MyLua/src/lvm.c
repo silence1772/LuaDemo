@@ -868,6 +868,9 @@ void luaV_execute (lua_State *L) {
         int b = GETARG_B(i);
         int c = GETARG_C(i);
         Table *t = luaH_new(L);
+        global_State *g = G(L);
+        if (g->exporting == 1)
+          hash_set_insert(g->monopolize, t);
         sethvalue(L, ra, t);
         if (b != 0 || c != 0)
           luaH_resize(L, t, luaO_fb2int(b), luaO_fb2int(c));
@@ -1312,6 +1315,12 @@ void luaV_execute (lua_State *L) {
       }
       vmcase(OP_EXTRAARG) {
         lua_assert(0);
+        vmbreak;
+      }
+      vmcase(OP_EXPORT) {
+        int b = GETARG_B(i);
+        global_State *g = G(L);
+        g->exporting = b;
         vmbreak;
       }
     }

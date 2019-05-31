@@ -1534,6 +1534,14 @@ static void retstat (LexState *ls) {
 }
 
 
+static void exportstat (LexState *ls, lu_byte exporting) {
+  global_State *g = G(ls->L);
+  FuncState *fs = ls->fs;
+  g->exporting = exporting;
+  luaK_codeABC(fs, OP_EXPORT, 0, exporting, 0);
+}
+
+
 static void statement (LexState *ls) {
   int line = ls->linenumber;  /* may be needed for error messages */
   enterlevel(ls);
@@ -1589,6 +1597,16 @@ static void statement (LexState *ls) {
     case TK_BREAK:   /* stat -> breakstat */
     case TK_GOTO: {  /* stat -> 'goto' NAME */
       gotostat(ls, luaK_jump(ls->fs));
+      break;
+    }
+    case TK_EXPORTSTART: {
+      exportstat(ls, 1);
+      luaX_next(ls);
+      break;
+    }
+    case TK_EXPORTEND: {
+      exportstat(ls, 0);
+      luaX_next(ls);
       break;
     }
     default: {  /* stat -> func | assignment */

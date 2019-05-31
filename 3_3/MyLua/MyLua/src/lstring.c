@@ -145,8 +145,11 @@ static TString *createstrobj (lua_State *L, size_t l, int tag, unsigned int h) {
 
 
 TString *luaS_createlngstrobj (lua_State *L, size_t l) {
+  global_State *g = G(L);
   TString *ts = createstrobj(L, l, LUA_TLNGSTR, G(L)->seed);
   ts->u.lnglen = l;
+  if (g->exporting == 1)
+    hash_set_insert(g->monopolize, ts);
   return ts;
 }
 
@@ -184,6 +187,8 @@ static TString *internshrstr (lua_State *L, const char *str, size_t l) {
     list = &g->strt.hash[lmod(h, g->strt.size)];  /* recompute with new size */
   }
   ts = createstrobj(L, l, LUA_TSHRSTR, h);
+  if (g->exporting == 1)
+    hash_set_insert(g->monopolize, ts);
   memcpy(getstr(ts), str, l * sizeof(char));
   ts->shrlen = cast_byte(l);
   ts->u.hnext = *list;

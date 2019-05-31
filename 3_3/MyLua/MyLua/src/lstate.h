@@ -13,6 +13,7 @@
 #include "ltm.h"
 #include "lzio.h"
 
+#include "chash_set.h"
 
 /*
 
@@ -169,6 +170,8 @@ typedef struct global_State {
   TString *tmname[TM_N];  /* array with tag-method names */
   struct Table *mt[LUA_NUMTAGS];  /* metatables for basic types */
   TString *strcache[STRCACHE_N][STRCACHE_M];  /* cache for strings in API */
+  lu_byte exporting;  /* true if exporting table */
+  hash_set_t* monopolize;  /* store gcobjects only use by export table */
 } global_State;
 
 

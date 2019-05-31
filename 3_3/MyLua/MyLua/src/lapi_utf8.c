@@ -1,4 +1,4 @@
-/*
+ï»¿/*
 ** $Id: lapi.c,v 2.259.1.2 2017/12/06 18:35:12 roberto Exp $
 ** Lua API
 ** See Copyright Notice in lua.h
@@ -1346,9 +1346,9 @@ static void get_str_next(TString *s, hash_map_t *pre_allgc, hash_map_t *pre_strt
 
 static void get_all_next(lua_State *L, Table *t, hash_map_t *pre_allgc, hash_map_t *pre_strt) {
   *(void**)hash_map_at(pre_allgc, t) = t->next;
-  /* ±éÀútableÒıÓÃµÄÆäËû¶ÔÏó */
+  /* éå†tableå¼•ç”¨çš„å…¶ä»–å¯¹è±¡ */
   unsigned int i;
-  for (i = 0; i < t->sizearray; i++) {  /* ±éÀúÊı×é²¿·Ö */
+  for (i = 0; i < t->sizearray; i++) {  /* éå†æ•°ç»„éƒ¨åˆ† */
     if (ttistable(&t->array[i]))
       get_all_next(L, hvalue(&t->array[i]), pre_allgc, pre_strt);
     else if (ttisstring(&t->array[i]))
@@ -1356,7 +1356,7 @@ static void get_all_next(lua_State *L, Table *t, hash_map_t *pre_allgc, hash_map
   }
   Node* n;
   Node* limit = gnode(t, cast(size_t, sizenode(t)));
-  for (n = gnode(t, 0); n < limit; n++) {  /* ±éÀú¹şÏ£±í²¿·Ö */
+  for (n = gnode(t, 0); n < limit; n++) {  /* éå†å“ˆå¸Œè¡¨éƒ¨åˆ† */
     if (ttistable(gval(n)))
       get_all_next(L, hvalue(gval(n)), pre_allgc, pre_strt);
     else if (ttisstring(gval(n)))
@@ -1407,7 +1407,7 @@ static void copy_str(lua_State* L, TString **s, stringtable *tb) {
   TString *src = *s;
   TString *dest = NULL;
 
-  /* long stringÖ±½Ó¸´ÖÆ */
+  /* long stringç›´æ¥å¤åˆ¶ */
   if (ttislngstring((TValue*)s)) {
     dest = (TString*)malloc(sizelstring(src->shrlen));
     memcpy(dest, src, sizelstring(src->shrlen));
@@ -1415,7 +1415,7 @@ static void copy_str(lua_State* L, TString **s, stringtable *tb) {
     return;
   }
 
-  /* short stringĞèÏÈÅĞ¶ÏÊÇ·ñÒÑ¸´ÖÆ */
+  /* short stringéœ€å…ˆåˆ¤æ–­æ˜¯å¦å·²å¤åˆ¶ */
   TString *tmp = NULL;
   const char *str = getstr(src);
   size_t l = src->shrlen;
@@ -1433,7 +1433,7 @@ static void copy_str(lua_State* L, TString **s, stringtable *tb) {
   memcpy(dest, src, sizelstring(src->shrlen));
   *s = dest;
 
-  /* ¼ÓÈëÁÙÊ±strt */
+  /* åŠ å…¥ä¸´æ—¶strt */
   if (tb->nuse >= tb->size && tb->size <= MAX_INT/2) {
     resize_strt(L, tb, tb->size * 2);
     list = &tb->hash[lmod(h, tb->size)];  /* recompute with new size */
@@ -1445,13 +1445,13 @@ static void copy_str(lua_State* L, TString **s, stringtable *tb) {
 
 
 static void copy_table(lua_State* L, Table **t, stringtable *tb) {
-  /* ¿½±´×ÔÉí */
+  /* æ‹·è´è‡ªèº« */
   Table *src = *t;
   Table *dest = (Table*)malloc(sizeof(Table));
   memcpy(dest, src, sizeof(Table));
   *t = dest;
 
-  /* ¿½±´Êı×é²¿·Ö */
+  /* æ‹·è´æ•°ç»„éƒ¨åˆ† */
   if (dest->sizearray != 0) {
     dest->array = (TValue*)malloc(dest->sizearray * sizeof(TValue));
     memcpy(dest->array, src->array, dest->sizearray * sizeof(TValue));
@@ -1464,7 +1464,7 @@ static void copy_table(lua_State* L, Table **t, stringtable *tb) {
       copy_str(L, &dest->array[i], tb);
   }
 
-  /* ¿½±´¹şÏ£±í²¿·Ö */
+  /* æ‹·è´å“ˆå¸Œè¡¨éƒ¨åˆ† */
   if (allocsizenode(dest) != 0) {
     dest->node = (Node*)malloc(sizenode(dest) * sizeof(Node));
     memcpy(dest->node, src->node, sizenode(dest) * sizeof(Node));
@@ -1488,20 +1488,20 @@ static void detach_str(lua_State *L, TString **s, hash_map_t *pre_allgc,
   hash_set_iterator_t it_hs;
   hash_set_t *monopolize = g->monopolize;
   
-  /* ÒÑ¾­·ÃÎÊ¹ıµÄÎŞĞèÔÙ´¦Àí */
+  /* å·²ç»è®¿é—®è¿‡çš„æ— éœ€å†å¤„ç† */
   it_hs = hash_set_find(visited, *s);
   if (!iterator_equal(it_hs, hash_set_end(visited)))
     return;
 
   hash_set_insert(visited, *s);
   it_hs = hash_set_find(monopolize, *s);
-  /* Íâ²¿¶ÔÏóÉî¿½±´ */
+  /* å¤–éƒ¨å¯¹è±¡æ·±æ‹·è´ */
   if (iterator_equal(it_hs, hash_set_end(monopolize))) {
     copy_str(L, s, tb);
   }
-  /* ÄÚ²¿¶ÔÏó°şÀë */
+  /* å†…éƒ¨å¯¹è±¡å‰¥ç¦» */
   else {
-    /* ´Óallgc°şÀë */
+    /* ä»allgcå‰¥ç¦» */
     if (*(void**)hash_map_at(pre_allgc, *s) == NULL) {
       g->allgc = (*s)->next;
     }
@@ -1511,11 +1511,11 @@ static void detach_str(lua_State *L, TString **s, hash_map_t *pre_allgc,
     *(void**)hash_map_at(pre_allgc, (*s)->next) = *(void**)hash_map_at(pre_allgc, *s);
     (*s)->next = NULL;
 
-    /* long stringÀàĞÍÎŞĞè´Óstrt°şÀë */
+    /* long stringç±»å‹æ— éœ€ä»strtå‰¥ç¦» */
     if (ttislngstring((TValue*)s))
       return;
 
-    /* ´ÓstrtÖĞ°şÀë */
+    /* ä»strtä¸­å‰¥ç¦» */
     if (*(void**)hash_map_at(pre_strt, *s) == NULL) {
       g->strt.hash[lmod((*s)->hash, g->strt.size)] = (*s)->u.hnext;
     }
@@ -1538,31 +1538,31 @@ static void detach_table_aux(lua_State *L, Table **t, hash_map_t *pre_allgc,
   hash_set_t *monopolize = g->monopolize;
   hash_set_iterator_t it_hs = hash_set_find(monopolize, *t);
 
-  /* Èô²»ÔÚmonopolize¼¯ºÏÖĞ£¬ËµÃ÷¸ÃtableÊÇÍâ²¿ÒıÓÃµÄ£¬ĞèÒª½øĞĞÉî¿½±´ */
+  /* è‹¥ä¸åœ¨monopolizeé›†åˆä¸­ï¼Œè¯´æ˜è¯¥tableæ˜¯å¤–éƒ¨å¼•ç”¨çš„ï¼Œéœ€è¦è¿›è¡Œæ·±æ‹·è´ */
   if (iterator_equal(it_hs, hash_set_end(monopolize))) {
     copy_table(L, t, tb);
   }
-  /* ·ñÔò½«Æä´ÓallgcÁ´±íÖĞ°şÀë£¬²¢ÇÒµİ¹é±éÀúÆäÒıÓÃµÄ¶ÔÏó */
+  /* å¦åˆ™å°†å…¶ä»allgcé“¾è¡¨ä¸­å‰¥ç¦»ï¼Œå¹¶ä¸”é€’å½’éå†å…¶å¼•ç”¨çš„å¯¹è±¡ */
   else {
-    if (*(void**)hash_map_at(pre_allgc, *t) == NULL) { // ¸Ã½ÚµãÊÇµÚÒ»¸ö½Úµã
+    if (*(void**)hash_map_at(pre_allgc, *t) == NULL) { // è¯¥èŠ‚ç‚¹æ˜¯ç¬¬ä¸€ä¸ªèŠ‚ç‚¹
       g->allgc = (*t)->next;
     }
-    else { // ²»ÊÇµÚÒ»¸ö½Úµã
+    else { // ä¸æ˜¯ç¬¬ä¸€ä¸ªèŠ‚ç‚¹
       cast(GCObject*, *(void**)hash_map_at(pre_allgc, *t))->next = (*t)->next;
     }
-    // ¸üĞÂ±»°şÀë½ÚµãµÄºóÒ»¸ö½ÚµãnextÔÚpre_allgcµÄ¼ÇÂ¼£¬±ÜÃâ°şÀënextÊ±³ö´í
+    // æ›´æ–°è¢«å‰¥ç¦»èŠ‚ç‚¹çš„åä¸€ä¸ªèŠ‚ç‚¹nextåœ¨pre_allgcçš„è®°å½•ï¼Œé¿å…å‰¥ç¦»nextæ—¶å‡ºé”™
     *(void**)hash_map_at(pre_allgc, (*t)->next) = *(void**)hash_map_at(pre_allgc, *t);
     (*t)->next = NULL;
 
-    /* µİ¹é±éÀútableÒıÓÃµÄÆäËû¶ÔÏó */
-    for (i = 0; i < (*t)->sizearray; i++) { /* Êı×é²¿·Ö */
+    /* é€’å½’éå†tableå¼•ç”¨çš„å…¶ä»–å¯¹è±¡ */
+    for (i = 0; i < (*t)->sizearray; i++) { /* æ•°ç»„éƒ¨åˆ† */
       if (ttistable(&(*t)->array[i]))
         detach_table_aux(L, &(*t)->array[i], pre_allgc, pre_strt, visited, tb);
       else if (ttisstring(&(*t)->array[i]))
         detach_str(L, &(*t)->array[i], pre_allgc, pre_strt, visited, tb);
     }
     limit = gnode(*t, cast(size_t, sizenode(*t)));
-    for (n = gnode(*t, 0); n < limit; n++) { /* ¹şÏ£±í²¿·Ö */
+    for (n = gnode(*t, 0); n < limit; n++) { /* å“ˆå¸Œè¡¨éƒ¨åˆ† */
       if (ttistable(gval(n))) { 
         detach_table_aux(L, &n->i_val, pre_allgc, pre_strt, visited, tb);
       }
@@ -1577,31 +1577,31 @@ static void detach_table_aux(lua_State *L, Table **t, hash_map_t *pre_allgc,
 
 
 static void detach_table(lua_State *L, Table **t) {
-  hash_map_t* pre_allgc = create_hash_map(void*, void*);; /* ¼ÇÂ¼¶ÔÏóÔÚallgcÁ´±íÖĞµÄÇ°Ò»¸ö½Úµã¶ÔÏó */
-  hash_map_t* pre_strt = create_hash_map(void*, void*);; /* ¼ÇÂ¼string¶ÔÏóÔÚstrtÁ´±íÖĞµÄÇ°Ò»¸ö½Úµã¶ÔÏó */
-  hash_set_t* visited = create_hash_set(void*); /* ´æ´¢ÒÑ¾­·ÃÎÊ¹ıµÄstring¶ÔÏó£¬±ÜÃâÖØ¸´°şÀë */
-  stringtable strt; /* ´æ´¢¾­¹ıÉî¿½±´µÄshort string£¬±ÜÃâÖØ¸´¿½±´ */
+  hash_map_t* pre_allgc = create_hash_map(void*, void*);; /* è®°å½•å¯¹è±¡åœ¨allgcé“¾è¡¨ä¸­çš„å‰ä¸€ä¸ªèŠ‚ç‚¹å¯¹è±¡ */
+  hash_map_t* pre_strt = create_hash_map(void*, void*);; /* è®°å½•stringå¯¹è±¡åœ¨strté“¾è¡¨ä¸­çš„å‰ä¸€ä¸ªèŠ‚ç‚¹å¯¹è±¡ */
+  hash_set_t* visited = create_hash_set(void*); /* å­˜å‚¨å·²ç»è®¿é—®è¿‡çš„stringå¯¹è±¡ï¼Œé¿å…é‡å¤å‰¥ç¦» */
+  stringtable strt; /* å­˜å‚¨ç»è¿‡æ·±æ‹·è´çš„short stringï¼Œé¿å…é‡å¤æ‹·è´ */
 
-  // ÈİÆ÷³õÊ¼»¯
+  // å®¹å™¨åˆå§‹åŒ–
   hash_map_init(pre_allgc);
   hash_map_init(pre_strt);
   hash_set_init(visited);
   strt_init(L, &strt);
 
-  // Äæ×ªallgcÁ´±íºÍstrt×Ö·û´®Á´±í 
+  // é€†è½¬allgcé“¾è¡¨å’Œstrtå­—ç¬¦ä¸²é“¾è¡¨ 
   reverse_allgc(L);
   reverse_strt(L);
-  // »ñÈ¡Ç°Ò»¸ö½Úµã¶ÔÏó
+  // è·å–å‰ä¸€ä¸ªèŠ‚ç‚¹å¯¹è±¡
   get_all_next(L, *t, pre_allgc, pre_strt);
 
-  // »Ö¸´Á´±í
+  // æ¢å¤é“¾è¡¨
   reverse_allgc(L);
   reverse_strt(L);
 
-  // °şÀëGCObject¶ÔÏó
+  // å‰¥ç¦»GCObjectå¯¹è±¡
   detach_table_aux(L, t, pre_allgc, pre_strt, visited, &strt);
 
-  // Ïú»ÙÈİÆ÷
+  // é”€æ¯å®¹å™¨
   hash_map_destroy(pre_allgc);
   hash_map_destroy(pre_strt);
   hash_set_destroy(visited);
@@ -1618,7 +1618,7 @@ LUA_API void *lua_export_table (lua_State *L, const char *name) {
   Table *tmp = NULL;
   lua_lock(L);
 
-  // »ñÈ¡table
+  // è·å–table
   lua_getglobal(L, name);
   o = index2addr(L, -1);
   api_check(L, ttistable(o), "table expected");
@@ -1626,11 +1626,11 @@ LUA_API void *lua_export_table (lua_State *L, const char *name) {
   tmp = t;
   lua_remove(L, -1);
 
-  // ½«¸Ãtable´ÓĞéÄâ»úÖĞ°şÀë 
+  // å°†è¯¥tableä»è™šæ‹Ÿæœºä¸­å‰¥ç¦» 
   detach_table(L, &t);
 
   if (t == tmp) {
-    // ÇĞ¶ÏÈ«¾Ö±äÁ¿¶Ô¸ÃtableµÄÒıÓÃ
+    // åˆ‡æ–­å…¨å±€å˜é‡å¯¹è¯¥tableçš„å¼•ç”¨
     lua_pushnil(L);
     lua_setglobal(L, name);
   }
@@ -1646,7 +1646,7 @@ static void merge_str(lua_State *L, TString *ts) {
   const char* str = getstr(ts);
   size_t l = strlen(str);
 
-  /* long stringÖ»¼ÓÈëallgc¼´¿É */
+  /* long stringåªåŠ å…¥allgcå³å¯ */
   if (l > LUAI_MAXSHORTLEN) {
     ts->marked = luaC_white(g);
     changewhite(ts);
@@ -1655,20 +1655,20 @@ static void merge_str(lua_State *L, TString *ts) {
     return;
   }
 
-  /* short stringĞèÏÈÅĞ¶ÏÊÇ·ñÒÑ¼ÓÈë */
+  /* short stringéœ€å…ˆåˆ¤æ–­æ˜¯å¦å·²åŠ å…¥ */
   unsigned int h = luaS_hash(str, l, g->seed);
   TString **list = &g->strt.hash[lmod(h, g->strt.size)];
   lua_assert(str != NULL);
   for (tmp = *list; tmp != NULL; tmp = tmp->u.hnext)
     if (tmp == ts) return; /* has been imported */
 
-  /* ¼ÓÈëallgc */
+  /* åŠ å…¥allgc */
   ts->marked = luaC_white(g);
   changewhite(ts);
   ts->next = g->allgc;
   g->allgc = ts;
 
-  /* ¼ÓÈëstrt */
+  /* åŠ å…¥strt */
   if (g->strt.nuse >= g->strt.size && g->strt.size <= MAX_INT/2) {
     luaS_resize(L, g->strt.size * 2);
     list = &g->strt.hash[lmod(h, g->strt.size)];  /* recompute with new size */
@@ -1683,15 +1683,15 @@ static void merge_str(lua_State *L, TString *ts) {
 static void merge_table(lua_State *L, Table *t) {
   global_State* g = G(L);
 
-  /* ¼ÓÈëallgcÖĞ */
+  /* åŠ å…¥allgcä¸­ */
   t->marked = luaC_white(g);
   changewhite(t);
   t->next = g->allgc;
   g->allgc = t;
 
-  /* µİ¹é´¦ÀítableÒıÓÃµÄ¶ÔÏó */
+  /* é€’å½’å¤„ç†tableå¼•ç”¨çš„å¯¹è±¡ */
   unsigned int i;
-  for (i = 0; i < t->sizearray; i++) {  /* Êı×é²¿·Ö */
+  for (i = 0; i < t->sizearray; i++) {  /* æ•°ç»„éƒ¨åˆ† */
     if (ttistable(&t->array[i]))
       merge_table(L, hvalue(&t->array[i]));
     else if (ttisstring(&t->array[i]))
@@ -1699,7 +1699,7 @@ static void merge_table(lua_State *L, Table *t) {
   }
   Node* n;
   Node* limit = gnode(t, cast(size_t, sizenode(t)));
-  for (n = gnode(t, 0); n < limit; n++) {  /* ¹şÏ£±í²¿·Ö */
+  for (n = gnode(t, 0); n < limit; n++) {  /* å“ˆå¸Œè¡¨éƒ¨åˆ† */
     if (ttistable(gval(n)))
       merge_table(L, hvalue(gval(n)));
     else if (ttisstring(gval(n)))
@@ -1710,9 +1710,9 @@ static void merge_table(lua_State *L, Table *t) {
   }
 
   /*
-  ** ÓÉÓÚ²»Í¬ĞéÄâ»úµÄhashÖÖ×Ó²»Í¬£¬²¢ÇÒÔÚtableµÄ¹şÏ£²¿·Ö²éÕÒÊÇ¸ù¾İ
-  ** keyµÄhashÖµÀ´²éÕÒµÄ£¬Òò´ËĞèÒª¶Ô¹şÏ£²¿·Ö½øĞĞrehash£¬ÒÔÊ¹Node
-  ** ´¦ÓÚÆäÕıÈ·µÄÎ»ÖÃÉÏ¡£ÕâÀïÀûÓÃresizeº¯Êı½øĞĞrehash
+  ** ç”±äºä¸åŒè™šæ‹Ÿæœºçš„hashç§å­ä¸åŒï¼Œå¹¶ä¸”åœ¨tableçš„å“ˆå¸Œéƒ¨åˆ†æŸ¥æ‰¾æ˜¯æ ¹æ®
+  ** keyçš„hashå€¼æ¥æŸ¥æ‰¾çš„ï¼Œå› æ­¤éœ€è¦å¯¹å“ˆå¸Œéƒ¨åˆ†è¿›è¡Œrehashï¼Œä»¥ä½¿Node
+  ** å¤„äºå…¶æ­£ç¡®çš„ä½ç½®ä¸Šã€‚è¿™é‡Œåˆ©ç”¨resizeå‡½æ•°è¿›è¡Œrehash
   */
   luaH_resize(L, t, t->sizearray, allocsizenode(t));
 }
@@ -1724,8 +1724,8 @@ static void merge_table(lua_State *L, Table *t) {
 */
 LUA_API void lua_import_table (lua_State *L, void *p) {
   lua_lock(L);
-  sethvalue(L, L->top, p); /* ½«tableÑ¹ÈëÕ»¶¥ */
+  sethvalue(L, L->top, p); /* å°†tableå‹å…¥æ ˆé¡¶ */
   api_incr_top(L);
-  merge_table(L, cast(Table*, p)); /* ½«table²¢ÈëĞéÄâ»úÖĞ */
+  merge_table(L, cast(Table*, p)); /* å°†tableå¹¶å…¥è™šæ‹Ÿæœºä¸­ */
   lua_unlock(L);
 }

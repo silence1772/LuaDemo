@@ -267,6 +267,13 @@ LUA_API void  (lua_setuservalue) (lua_State *L, int idx);
 
 
 /*
+** 'export' and 'import' table between Lua state
+*/
+LUA_API void *(lua_export_table) (lua_State *L, const char *name);
+LUA_API void (lua_import_table) (lua_State *L, void *p);
+
+
+/*
 ** 'load' and 'call' functions (load and run Lua code)
 */
 LUA_API void  (lua_callk) (lua_State *L, int nargs, int nresults,
