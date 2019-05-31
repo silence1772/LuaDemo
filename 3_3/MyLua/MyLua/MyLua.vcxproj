@@ -1,0 +1,434 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\lapi.h" />
+    <ClInclude Include="src\lauxlib.h" />
+    <ClInclude Include="src\lcode.h" />
+    <ClInclude Include="src\lctype.h" />
+    <ClInclude Include="src\ldebug.h" />
+    <ClInclude Include="src\ldo.h" />
+    <ClInclude Include="src\lfunc.h" />
+    <ClInclude Include="src\lgc.h" />
+    <ClInclude Include="src\libcstl\calgorithm.h" />
+    <ClInclude Include="src\libcstl\cdeque.h" />
+    <ClInclude Include="src\libcstl\cfunctional.h" />
+    <ClInclude Include="src\libcstl\chash_map.h" />
+    <ClInclude Include="src\libcstl\chash_set.h" />
+    <ClInclude Include="src\libcstl\citerator.h" />
+    <ClInclude Include="src\libcstl\clist.h" />
+    <ClInclude Include="src\libcstl\cmap.h" />
+    <ClInclude Include="src\libcstl\cnumeric.h" />
+    <ClInclude Include="src\libcstl\cqueue.h" />
+    <ClInclude Include="src\libcstl\cset.h" />
+    <ClInclude Include="src\libcstl\cslist.h" />
+    <ClInclude Include="src\libcstl\cstack.h" />
+    <ClInclude Include="src\libcstl\cstl_algo_mutating.h" />
+    <ClInclude Include="src\libcstl\cstl_algo_mutating_aux.h" />
+    <ClInclude Include="src\libcstl\cstl_algo_mutating_private.h" />
+    <ClInclude Include="src\libcstl\cstl_algo_nonmutating.h" />
+    <ClInclude Include="src\libcstl\cstl_algo_nonmutating_private.h" />
+    <ClInclude Include="src\libcstl\cstl_algo_sorting.h" />
+    <ClInclude Include="src\libcstl\cstl_algo_sorting_aux.h" />
+    <ClInclude Include="src\libcstl\cstl_algo_sorting_private.h" />
+    <ClInclude Include="src\libcstl\cstl_alloc.h" />
+    <ClInclude Include="src\libcstl\cstl_alloc_aux.h" />
+    <ClInclude Include="src\libcstl\cstl_avl_tree.h" />
+    <ClInclude Include="src\libcstl\cstl_avl_tree_aux.h" />
+    <ClInclude Include="src\libcstl\cstl_avl_tree_iterator.h" />
+    <ClInclude Include="src\libcstl\cstl_avl_tree_private.h" />
+    <ClInclude Include="src\libcstl\cstl_basic_string.h" />
+    <ClInclude Include="src\libcstl\cstl_basic_string_aux.h" />
+    <ClInclude Include="src\libcstl\cstl_basic_string_iterator.h" />
+    <ClInclude Include="src\libcstl\cstl_basic_string_private.h" />
+    <ClInclude Include="src\libcstl\cstl_def.h" />
+    <ClInclude Include="src\libcstl\cstl_deque.h" />
+    <ClInclude Include="src\libcstl\cstl_deque_aux.h" />
+    <ClInclude Include="src\libcstl\cstl_deque_iterator.h" />
+    <ClInclude Include="src\libcstl\cstl_deque_private.h" />
+    <ClInclude Include="src\libcstl\cstl_function.h" />
+    <ClInclude Include="src\libcstl\cstl_function_private.h" />
+    <ClInclude Include="src\libcstl\cstl_hashtable.h" />
+    <ClInclude Include="src\libcstl\cstl_hashtable_aux.h" />
+    <ClInclude Include="src\libcstl\cstl_hashtable_iterator.h" />
+    <ClInclude Include="src\libcstl\cstl_hashtable_private.h" />
+    <ClInclude Include="src\libcstl\cstl_hash_map.h" />
+    <ClInclude Include="src\libcstl\cstl_hash_map_aux.h" />
+    <ClInclude Include="src\libcstl\cstl_hash_map_iterator.h" />
+    <ClInclude Include="src\libcstl\cstl_hash_map_private.h" />
+    <ClInclude Include="src\libcstl\cstl_hash_multimap.h" />
+    <ClInclude Include="src\libcstl\cstl_hash_multimap_aux.h" />
+    <ClInclude Include="src\libcstl\cstl_hash_multimap_iterator.h" />
+    <ClInclude Include="src\libcstl\cstl_hash_multimap_private.h" />
+    <ClInclude Include="src\libcstl\cstl_hash_multiset.h" />
+    <ClInclude Include="src\libcstl\cstl_hash_multiset_aux.h" />
+    <ClInclude Include="src\libcstl\cstl_hash_multiset_iterator.h" />
+    <ClInclude Include="src\libcstl\cstl_hash_multiset_private.h" />
+    <ClInclude Include="src\libcstl\cstl_hash_set.h" />
+    <ClInclude Include="src\libcstl\cstl_hash_set_aux.h" />
+    <ClInclude Include="src\libcstl\cstl_hash_set_iterator.h" />
+    <ClInclude Include="src\libcstl\cstl_hash_set_private.h" />
+    <ClInclude Include="src\libcstl\cstl_heap.h" />
+    <ClInclude Include="src\libcstl\cstl_heap_aux.h" />
+    <ClInclude Include="src\libcstl\cstl_iterator.h" />
+    <ClInclude Include="src\libcstl\cstl_iterator_private.h" />
+    <ClInclude Include="src\libcstl\cstl_list.h" />
+    <ClInclude Include="src\libcstl\cstl_list_aux.h" />
+    <ClInclude Include="src\libcstl\cstl_list_iterator.h" />
+    <ClInclude Include="src\libcstl\cstl_list_private.h" />
+    <ClInclude Include="src\libcstl\cstl_map.h" />
+    <ClInclude Include="src\libcstl\cstl_map_aux.h" />
+    <ClInclude Include="src\libcstl\cstl_map_iterator.h" />
+    <ClInclude Include="src\libcstl\cstl_map_private.h" />
+    <ClInclude Include="src\libcstl\cstl_multimap.h" />
+    <ClInclude Include="src\libcstl\cstl_multimap_aux.h" />
+    <ClInclude Include="src\libcstl\cstl_multimap_iterator.h" />
+    <ClInclude Include="src\libcstl\cstl_multimap_private.h" />
+    <ClInclude Include="src\libcstl\cstl_multiset.h" />
+    <ClInclude Include="src\libcstl\cstl_multiset_aux.h" />
+    <ClInclude Include="src\libcstl\cstl_multiset_iterator.h" />
+    <ClInclude Include="src\libcstl\cstl_multiset_private.h" />
+    <ClInclude Include="src\libcstl\cstl_numeric.h" />
+    <ClInclude Include="src\libcstl\cstl_numeric_private.h" />
+    <ClInclude Include="src\libcstl\cstl_pair.h" />
+    <ClInclude Include="src\libcstl\cstl_pair_aux.h" />
+    <ClInclude Include="src\libcstl\cstl_pair_private.h" />
+    <ClInclude Include="src\libcstl\cstl_priority_queue.h" />
+    <ClInclude Include="src\libcstl\cstl_priority_queue_private.h" />
+    <ClInclude Include="src\libcstl\cstl_queue.h" />
+    <ClInclude Include="src\libcstl\cstl_queue_private.h" />
+    <ClInclude Include="src\libcstl\cstl_rb_tree.h" />
+    <ClInclude Include="src\libcstl\cstl_rb_tree_aux.h" />
+    <ClInclude Include="src\libcstl\cstl_rb_tree_iterator.h" />
+    <ClInclude Include="src\libcstl\cstl_rb_tree_private.h" />
+    <ClInclude Include="src\libcstl\cstl_set.h" />
+    <ClInclude Include="src\libcstl\cstl_set_aux.h" />
+    <ClInclude Include="src\libcstl\cstl_set_iterator.h" />
+    <ClInclude Include="src\libcstl\cstl_set_private.h" />
+    <ClInclude Include="src\libcstl\cstl_slist.h" />
+    <ClInclude Include="src\libcstl\cstl_slist_aux.h" />
+    <ClInclude Include="src\libcstl\cstl_slist_iterator.h" />
+    <ClInclude Include="src\libcstl\cstl_slist_private.h" />
+    <ClInclude Include="src\libcstl\cstl_stack.h" />
+    <ClInclude Include="src\libcstl\cstl_stack_private.h" />
+    <ClInclude Include="src\libcstl\cstl_string.h" />
+    <ClInclude Include="src\libcstl\cstl_string_iterator.h" />
+    <ClInclude Include="src\libcstl\cstl_string_private.h" />
+    <ClInclude Include="src\libcstl\cstl_types.h" />
+    <ClInclude Include="src\libcstl\cstl_types_aux.h" />
+    <ClInclude Include="src\libcstl\cstl_types_builtin.h" />
+    <ClInclude Include="src\libcstl\cstl_types_parse.h" />
+    <ClInclude Include="src\libcstl\cstl_vector.h" />
+    <ClInclude Include="src\libcstl\cstl_vector_aux.h" />
+    <ClInclude Include="src\libcstl\cstl_vector_iterator.h" />
+    <ClInclude Include="src\libcstl\cstl_vector_private.h" />
+    <ClInclude Include="src\libcstl\cstring.h" />
+    <ClInclude Include="src\libcstl\cutility.h" />
+    <ClInclude Include="src\libcstl\cvector.h" />
+    <ClInclude Include="src\llex.h" />
+    <ClInclude Include="src\llimits.h" />
+    <ClInclude Include="src\lmem.h" />
+    <ClInclude Include="src\lobject.h" />
+    <ClInclude Include="src\lopcodes.h" />
+    <ClInclude Include="src\lparser.h" />
+    <ClInclude Include="src\lprefix.h" />
+    <ClInclude Include="src\lstate.h" />
+    <ClInclude Include="src\lstring.h" />
+    <ClInclude Include="src\ltable.h" />
+    <ClInclude Include="src\ltm.h" />
+    <ClInclude Include="src\lua.h" />
+    <ClInclude Include="src\lua.hpp" />
+    <ClInclude Include="src\luaconf.h" />
+    <ClInclude Include="src\lualib.h" />
+    <ClInclude Include="src\lundump.h" />
+    <ClInclude Include="src\lvm.h" />
+    <ClInclude Include="src\lzio.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\lapi.c" />
+    <ClCompile Include="src\lauxlib.c" />
+    <ClCompile Include="src\lbaselib.c" />
+    <ClCompile Include="src\lbitlib.c" />
+    <ClCompile Include="src\lcode.c" />
+    <ClCompile Include="src\lcorolib.c" />
+    <ClCompile Include="src\lctype.c" />
+    <ClCompile Include="src\ldblib.c" />
+    <ClCompile Include="src\ldebug.c" />
+    <ClCompile Include="src\ldo.c" />
+    <ClCompile Include="src\ldump.c" />
+    <ClCompile Include="src\lfunc.c" />
+    <ClCompile Include="src\lgc.c" />
+    <ClCompile Include="src\libcstl\cstl_algo_mutating.c" />
+    <ClCompile Include="src\libcstl\cstl_algo_mutating_aux.c" />
+    <ClCompile Include="src\libcstl\cstl_algo_mutating_private.c" />
+    <ClCompile Include="src\libcstl\cstl_algo_nonmutating.c" />
+    <ClCompile Include="src\libcstl\cstl_algo_nonmutating_private.c" />
+    <ClCompile Include="src\libcstl\cstl_algo_sorting.c" />
+    <ClCompile Include="src\libcstl\cstl_algo_sorting_aux.c" />
+    <ClCompile Include="src\libcstl\cstl_algo_sorting_private.c" />
+    <ClCompile Include="src\libcstl\cstl_alloc.c" />
+    <ClCompile Include="src\libcstl\cstl_alloc_aux.c" />
+    <ClCompile Include="src\libcstl\cstl_avl_tree.c" />
+    <ClCompile Include="src\libcstl\cstl_avl_tree_aux.c" />
+    <ClCompile Include="src\libcstl\cstl_avl_tree_iterator.c" />
+    <ClCompile Include="src\libcstl\cstl_avl_tree_private.c" />
+    <ClCompile Include="src\libcstl\cstl_basic_string.c" />
+    <ClCompile Include="src\libcstl\cstl_basic_string_aux.c" />
+    <ClCompile Include="src\libcstl\cstl_basic_string_iterator.c" />
+    <ClCompile Include="src\libcstl\cstl_basic_string_private.c" />
+    <ClCompile Include="src\libcstl\cstl_deque.c" />
+    <ClCompile Include="src\libcstl\cstl_deque_aux.c" />
+    <ClCompile Include="src\libcstl\cstl_deque_iterator.c" />
+    <ClCompile Include="src\libcstl\cstl_deque_private.c" />
+    <ClCompile Include="src\libcstl\cstl_function.c" />
+    <ClCompile Include="src\libcstl\cstl_function_private.c" />
+    <ClCompile Include="src\libcstl\cstl_hashtable.c" />
+    <ClCompile Include="src\libcstl\cstl_hashtable_aux.c" />
+    <ClCompile Include="src\libcstl\cstl_hashtable_iterator.c" />
+    <ClCompile Include="src\libcstl\cstl_hashtable_private.c" />
+    <ClCompile Include="src\libcstl\cstl_hash_map.c" />
+    <ClCompile Include="src\libcstl\cstl_hash_map_aux.c" />
+    <ClCompile Include="src\libcstl\cstl_hash_map_iterator.c" />
+    <ClCompile Include="src\libcstl\cstl_hash_map_private.c" />
+    <ClCompile Include="src\libcstl\cstl_hash_multimap.c" />
+    <ClCompile Include="src\libcstl\cstl_hash_multimap_aux.c" />
+    <ClCompile Include="src\libcstl\cstl_hash_multimap_iterator.c" />
+    <ClCompile Include="src\libcstl\cstl_hash_multimap_private.c" />
+    <ClCompile Include="src\libcstl\cstl_hash_multiset.c" />
+    <ClCompile Include="src\libcstl\cstl_hash_multiset_aux.c" />
+    <ClCompile Include="src\libcstl\cstl_hash_multiset_iterator.c" />
+    <ClCompile Include="src\libcstl\cstl_hash_multiset_private.c" />
+    <ClCompile Include="src\libcstl\cstl_hash_set.c" />
+    <ClCompile Include="src\libcstl\cstl_hash_set_aux.c" />
+    <ClCompile Include="src\libcstl\cstl_hash_set_iterator.c" />
+    <ClCompile Include="src\libcstl\cstl_hash_set_private.c" />
+    <ClCompile Include="src\libcstl\cstl_heap.c" />
+    <ClCompile Include="src\libcstl\cstl_heap_aux.c" />
+    <ClCompile Include="src\libcstl\cstl_iterator.c" />
+    <ClCompile Include="src\libcstl\cstl_iterator_private.c" />
+    <ClCompile Include="src\libcstl\cstl_list.c" />
+    <ClCompile Include="src\libcstl\cstl_list_aux.c" />
+    <ClCompile Include="src\libcstl\cstl_list_iterator.c" />
+    <ClCompile Include="src\libcstl\cstl_list_private.c" />
+    <ClCompile Include="src\libcstl\cstl_map.c" />
+    <ClCompile Include="src\libcstl\cstl_map_aux.c" />
+    <ClCompile Include="src\libcstl\cstl_map_iterator.c" />
+    <ClCompile Include="src\libcstl\cstl_map_private.c" />
+    <ClCompile Include="src\libcstl\cstl_multimap.c" />
+    <ClCompile Include="src\libcstl\cstl_multimap_aux.c" />
+    <ClCompile Include="src\libcstl\cstl_multimap_iterator.c" />
+    <ClCompile Include="src\libcstl\cstl_multimap_private.c" />
+    <ClCompile Include="src\libcstl\cstl_multiset.c" />
+    <ClCompile Include="src\libcstl\cstl_multiset_aux.c" />
+    <ClCompile Include="src\libcstl\cstl_multiset_iterator.c" />
+    <ClCompile Include="src\libcstl\cstl_multiset_private.c" />
+    <ClCompile Include="src\libcstl\cstl_numeric.c" />
+    <ClCompile Include="src\libcstl\cstl_numeric_private.c" />
+    <ClCompile Include="src\libcstl\cstl_pair.c" />
+    <ClCompile Include="src\libcstl\cstl_pair_aux.c" />
+    <ClCompile Include="src\libcstl\cstl_pair_private.c" />
+    <ClCompile Include="src\libcstl\cstl_priority_queue.c" />
+    <ClCompile Include="src\libcstl\cstl_priority_queue_private.c" />
+    <ClCompile Include="src\libcstl\cstl_queue.c" />
+    <ClCompile Include="src\libcstl\cstl_queue_private.c" />
+    <ClCompile Include="src\libcstl\cstl_rb_tree.c" />
+    <ClCompile Include="src\libcstl\cstl_rb_tree_aux.c" />
+    <ClCompile Include="src\libcstl\cstl_rb_tree_iterator.c" />
+    <ClCompile Include="src\libcstl\cstl_rb_tree_private.c" />
+    <ClCompile Include="src\libcstl\cstl_set.c" />
+    <ClCompile Include="src\libcstl\cstl_set_aux.c" />
+    <ClCompile Include="src\libcstl\cstl_set_iterator.c" />
+    <ClCompile Include="src\libcstl\cstl_set_private.c" />
+    <ClCompile Include="src\libcstl\cstl_slist.c" />
+    <ClCompile Include="src\libcstl\cstl_slist_aux.c" />
+    <ClCompile Include="src\libcstl\cstl_slist_iterator.c" />
+    <ClCompile Include="src\libcstl\cstl_slist_private.c" />
+    <ClCompile Include="src\libcstl\cstl_stack.c" />
+    <ClCompile Include="src\libcstl\cstl_stack_private.c" />
+    <ClCompile Include="src\libcstl\cstl_string.c" />
+    <ClCompile Include="src\libcstl\cstl_string_private.c" />
+    <ClCompile Include="src\libcstl\cstl_types.c" />
+    <ClCompile Include="src\libcstl\cstl_types_aux.c" />
+    <ClCompile Include="src\libcstl\cstl_types_builtin.c" />
+    <ClCompile Include="src\libcstl\cstl_types_parse.c" />
+    <ClCompile Include="src\libcstl\cstl_vector.c" />
+    <ClCompile Include="src\libcstl\cstl_vector_aux.c" />
+    <ClCompile Include="src\libcstl\cstl_vector_iterator.c" />
+    <ClCompile Include="src\libcstl\cstl_vector_private.c" />
+    <ClCompile Include="src\linit.c" />
+    <ClCompile Include="src\liolib.c" />
+    <ClCompile Include="src\llex.c" />
+    <ClCompile Include="src\lmathlib.c" />
+    <ClCompile Include="src\lmem.c" />
+    <ClCompile Include="src\loadlib.c" />
+    <ClCompile Include="src\lobject.c" />
+    <ClCompile Include="src\lopcodes.c" />
+    <ClCompile Include="src\loslib.c" />
+    <ClCompile Include="src\lparser.c" />
+    <ClCompile Include="src\lstate.c" />
+    <ClCompile Include="src\lstring.c" />
+    <ClCompile Include="src\lstrlib.c" />
+    <ClCompile Include="src\ltable.c" />
+    <ClCompile Include="src\ltablib.c" />
+    <ClCompile Include="src\ltm.c" />
+    <ClCompile Include="src\lua.c" />
+    <ClCompile Include="src\luac.c" />
+    <ClCompile Include="src\lundump.c" />
+    <ClCompile Include="src\lutf8lib.c" />
+    <ClCompile Include="src\lvm.c" />
+    <ClCompile Include="src\lzio.c" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <ProjectGuid>{7F71EFDF-3022-4C26-9C7E-64475A6EDBF4}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>MyLua</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>.\src\libcstl;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
